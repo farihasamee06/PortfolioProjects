@@ -1,6 +1,16 @@
+/*
+
+Cleaning Data in SQL Queries
+
+*/
+
+
 
 select *
 from PortfolioProject..NashvilleHousing
+
+-- Standardize Date Format
+	
 
 select SaleDate, CONVERT(date, SaleDate)
 from PortfolioProject..NashvilleHousing
@@ -8,7 +18,11 @@ from PortfolioProject..NashvilleHousing
 Update NashvilleHousing
 set SaleDate = CONVERT(date, SaleDate)
 
+	
 
+-- Populate Property Address data
+
+	
 select *
 from PortfolioProject..NashvilleHousing
 --where PropertyAddress is null
@@ -31,6 +45,11 @@ join PortfolioProject..NashvilleHousing b
 where a.PropertyAddress is null
 
 
+	
+-- Breaking out Address into Individual Columns (Address, City, State)
+
+
+	
 select PropertyAddress
 from PortfolioProject..NashvilleHousing
 
@@ -52,8 +71,7 @@ Add SplitCity Nvarchar(255);
 Update NashvilleHousing
 set SplitCity = SUBSTRING(PropertyAddress, CHARINDEX(',', PropertyAddress)+1, LEN(PropertyAddress))
 
-select *
-from PortfolioProject..NashvilleHousing
+
 
 
 select OwnerAddress
@@ -87,6 +105,12 @@ select *
 from PortfolioProject..NashvilleHousing
 
 
+
+	
+-- Change Y and N to Yes and No in "Sold as Vacant" field
+
+
+	
 select distinct(soldasvacant), COUNT(SoldAsVacant)
 from PortfolioProject..NashvilleHousing
 group by SoldAsVacant
@@ -106,6 +130,10 @@ set SoldAsVacant = case when SoldAsVacant = 'Y' then 'Yes'
 	   END
 
 
+
+	
+-- Remove Duplicates
+	
 with rowNumCTE AS(
 select *,
 	row_number() over (
@@ -127,9 +155,14 @@ where row_num > 1
 order by  PropertyAddress
 
 
+
+-- Delete Unused Columns
+
+	
+
 select *
 from PortfolioProject..NashvilleHousing
 
 
 alter table PortfolioProject..NashvilleHousing
-drop column saledate
+drop column OwnerAddress, TaxDistrict, PropertyAddress, SaleDate
